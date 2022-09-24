@@ -20,7 +20,7 @@ public class ModuloseguridadApplication {
 				.getConnection("jdbc:mysql://localhost:3306/moduloseg2", "root", "budakar01");
 
 
-		testPreparedStatement(conexion);
+		loginByUsernameAndPass(conexion, "DNI73267572", "secret");
 
 		//Cerrar conexion
 		conexion.close();
@@ -80,5 +80,32 @@ public class ModuloseguridadApplication {
 								rs.getString("enable")
 			);
 		}
+	}
+
+	public static void loginByUsernameAndPass(Connection connection,String username,String pass) throws Exception{
+
+		CallableStatement cs = connection.prepareCall("{call login(?,?)}");
+		cs.setString(1,username);
+		cs.setString(2,pass);
+
+		ResultSet rs = cs.executeQuery();
+
+		while(rs.next()){
+			System.out.println(rs.getString(1));
+		}
+	}
+
+	public static void updatePassByUsername(Connection connection,String username,String pass) throws Exception{
+
+		CallableStatement cs = connection.prepareCall("{call updatePassByUsername(?,?,?)}");
+		cs.setString(1,username);
+		cs.setString(2,pass);
+		cs.registerOutParameter(3, Types.INTEGER);
+
+		cs.execute();
+
+		int affectedRows = cs.getInt(3);
+
+		System.out.println("Filas afectadas :" +affectedRows);
 	}
 }
